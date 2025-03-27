@@ -1,12 +1,12 @@
 name: My First GitHub Actions
 #1. Push and Pull Request Trigger
-on: 
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+on: [push]
+  # push:
+  #   branches:
+  #     - main
+  # pull_request:
+  #   branches:
+  #     - main
 # 2. Scheduled Trigger (Cron Job)
 # on:
 #   schedule:
