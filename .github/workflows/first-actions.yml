@@ -1,17 +1,50 @@
 name: My First GitHub Actions
+#1. Push and Pull Request Trigger
+on: 
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+# 2. Scheduled Trigger (Cron Job)
+# on:
+#   schedule:
+#     - cron: "0 0 * * 1"
 
-on: [push]
+#  3. Issue Event
+# on:
+#   issues:
+#     types: [opened, edited, closed]
+
+#4. manual
+# on:
+#   workflow_dispatch:
+#     inputs:
+#       environment:
+#         required: true
+#         default: 'staging'
+#         type: choice
+#         options:
+#           - staging
+#           - production
+      
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
+    # Job-Level Condition: Run only if the event is a push to 'main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
     strategy:
       matrix:
         python-version: [3.8, 3.9]
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
@@ -22,7 +55,22 @@ jobs:
         python -m pip install --upgrade pip
         pip install pytest
 
+    # Using GitHub Secret
+    - name: Use Secret Key
+      run: echo "Using Secret Key"
+      env:
+        MY_SECRET_KEY: ${{ secrets.MY_SECRET_KEY }}
+
+
+    # Using Environment Variable
+    - name: Set and Use Environment Variable
+      run: echo "My Environment Variable"
+      env:
+        MY_ENV_VAR: "Hello from GitHub Actions"
+
+    # Step-Level Condition: Run tests only if dependencies were installed successfully
     - name: Run tests
+      if: success()  
       run: |
         cd src
-        python -m pytest addition.py
+        python -m pytest test_addition.py
